@@ -1,922 +1,183 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Real Solana Bot Wallet</title>
-  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Send SOL (open in Phantom)</title>
   <style>
-    :root {
-      --primary: #9945FF;
-      --primary-dark: #7A2FCC;
-      --secondary: #14F195;
-      --dark: #1A1A1A;
-      --light: #FFFFFF;
-      --gray: #6C757D;
-      --danger: #FF375F;
-      --success: #14F195;
-      --warning: #FF6D00;
-      --border-radius: 12px;
-      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    
     body {
-      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-      background: linear-gradient(135deg, #1A1A1A 0%, #2D2D2D 100%);
-      color: var(--light);
-      line-height: 1.6;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    h1 {
-      color: var(--light);
-      font-size: 1.8rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .wallet-info {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: var(--border-radius);
-      padding: 25px;
-      margin-bottom: 25px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .wallet-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    
-    .balance {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: var(--light);
-      margin-bottom: 10px;
-    }
-    
-    .balance-usd {
-      color: var(--gray);
-      font-size: 1rem;
-      margin-bottom: 15px;
-    }
-    
-    .address-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 12px 15px;
-      border-radius: var(--border-radius);
-    }
-    
-    .address {
-      font-family: 'Monaco', 'Consolas', monospace;
-      word-break: break-all;
-      font-size: 0.9rem;
-      color: var(--gray);
-    }
-    
-    .copy-btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: var(--border-radius);
-      padding: 8px 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 0.85rem;
-    }
-    
-    .copy-btn:hover {
-      background: var(--primary-dark);
-    }
-    
-    .send-form {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: var(--border-radius);
-      padding: 25px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      margin-bottom: 25px;
+      font-family: system-ui, Segoe UI, Roboto, Arial;
+      max-width: 640px;
+      margin: 40px auto;
+      padding: 12px;
+      background-color: #121212;
+      color: #e0e0e0;
     }
     
     h2 {
-      color: var(--light);
-      margin-bottom: 20px;
-      font-size: 1.5rem;
-    }
-    
-    .form-group {
-      margin-bottom: 20px;
+      color: #ffffff;
     }
     
     label {
       display: block;
-      margin-bottom: 8px;
-      font-weight: 500;
-      color: var(--gray);
+      margin: 12px 0 6px;
+      color: #b0b0b0;
     }
     
-    input, select {
+    input {
       width: 100%;
-      padding: 14px;
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: var(--border-radius);
+      padding: 10px;
       font-size: 16px;
-      color: var(--light);
-      transition: all 0.2s;
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+      border: 1px solid #444;
+      border-radius: 4px;
+      box-sizing: border-box;
     }
     
-    input:focus, select:focus {
+    input:focus {
       outline: none;
-      border-color: var(--primary);
+      border-color: #8a2be2;
+      box-shadow: 0 0 0 2px rgba(138, 43, 226, 0.2);
+    }
+    
+    input::placeholder {
+      color: #888;
     }
     
     button {
-      background: var(--primary);
+      margin-top: 14px;
+      padding: 12px;
+      width: 100%;
+      font-size: 16px;
+      background-color: #8a2be2;
       color: white;
       border: none;
-      border-radius: var(--border-radius);
-      padding: 14px 20px;
-      font-size: 16px;
-      font-weight: 600;
+      border-radius: 4px;
       cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      transition: background-color 0.2s;
     }
     
     button:hover {
-      background: var(--primary-dark);
+      background-color: #7a1bd2;
     }
     
-    button:disabled {
-      background: var(--gray);
-      cursor: not-allowed;
+    button:active {
+      background-color: #6a0bc2;
     }
     
-    .actions {
-      display: flex;
-      gap: 12px;
-    }
-    
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--light);
-    }
-    
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-    
-    .btn-success {
-      background: var(--success);
-      color: var(--dark);
-    }
-    
-    .btn-success:hover {
-      background: #0ED887;
-    }
-    
-    .transactions {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: var(--border-radius);
-      padding: 25px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .transaction-list {
-      max-height: 400px;
-      overflow-y: auto;
-    }
-    
-    .transaction-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 15px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .transaction-item:last-child {
-      border-bottom: none;
-    }
-    
-    .transaction-amount {
-      font-weight: bold;
-      font-size: 1.1rem;
-    }
-    
-    .transaction-positive {
-      color: var(--success);
-    }
-    
-    .transaction-negative {
-      color: var(--danger);
-    }
-    
-    .transaction-details {
-      flex: 1;
-    }
-    
-    .transaction-date {
-      font-size: 0.85rem;
-      color: var(--gray);
-    }
-    
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 15px 20px;
-      border-radius: var(--border-radius);
-      color: var(--light);
-      box-shadow: var(--shadow);
-      z-index: 1000;
-      border-radius: var(--border-radius);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    
-    .notification.show {
-      opacity: 1;
-    }
-    
-    .notification.success {
-      background: var(--success);
-      color: var(--dark);
-    }
-    
-    .notification.error {
-      background: var(--danger);
-    }
-    
-    .tabs {
-      display: flex;
-      margin-bottom: 25px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    
-    .tab {
-      padding: 12px 24px;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-    
-    .tab.active {
-      border-bottom-color: var(--primary);
-      color: var(--primary);
-    }
-    
-    .tab-content {
-      display: none;
-    }
-    
-    .tab-content.active {
-      display: block;
-    }
-    
-    .wallet-connection {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
-      text-align: center;
-    }
-    
-    .connection-status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .status-connected {
-      color: var(--success);
-    }
-    
-    .status-disconnected {
-      color: var(--danger);
-    }
-    
-    .qr-container {
-      text-align: center;
-      margin: 25px 0;
-    }
-    
-    #qrCode {
-      display: inline-block;
-      background: white;
-      padding: 15px;
-      border-radius: var(--border-radius);
-    }
-    
-    .connection-options {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    
-    .connection-btn {
-      min-width: 160px;
-    }
-    
-    .loading {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: var(--primary);
-      animation: spin 1s ease-in-out infinite;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    @media (max-width: 600px) {
-      body {
-        padding: 15px;
-      }
-      
-      h1 {
-        font-size: 1.5rem;
-      flex-direction: column;
-        text-align: center;
-      }
-      
-      .balance {
-        font-size: 2rem;
-      }
-      
-      .actions {
-        flex-direction: column;
-      }
-      
-      button {
-        width: 100%;
-      }
-      
-      .connection-options {
-        flex-direction: column;
-      }
-      
-      .connection-btn {
-        width: 100%;
-      }
+    .hint {
+      font-size: 13px;
+      color: #aaa;
+      margin-top: 8px;
+      line-height: 1.4;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1><i class="fas fa-robot"></i> Real Solana Bot Wallet</h1>
-    <div class="actions">
-      <button id="refreshBtn" class="btn-secondary"><i class="fas fa-sync-alt"></i> Refresh</button>
-      <button id="disconnectBtn" class="btn-secondary"><i class="fas fa-plug"></i> Disconnect</button>
-    </div>
-  </header>
-  
-  <div class="tabs">
-    <div class="tab active" data-tab="wallet">Wallet</div>
-    <div class="tab" data-tab="send">Send SOL</div>
-    <div class="tab" data-tab="receive">Receive SOL</div>
-  </div>
-  
-  <div class="tab-content active" id="wallet-tab">
-    <div class="wallet-info">
-      <div class="wallet-header">
-        <h2>Bot Wallet</h2>
-        <div class="connection-status">
-          <span id="statusIndicator" class="status-connected">●</span>
-          <span id="statusText">Connected</span>
-      </div>
-      
-      <div class="balance" id="balanceDisplay">-- SOL</div>
-      <div class="balance-usd" id="usdBalance">-- USD</div>
-      <div class="address-container">
-        <div class="address" id="walletAddress">Connect a wallet to view address</div>
-        <button id="copyAddressBtn" class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
-      </div>
-    </div>
-    
-    <div class="transactions">
-      <h2>Recent Transactions</h2>
-      <div class="transaction-list" id="transactionList">
-      </div>
-    </div>
-  </div>
-  
-  <div class="tab-content" id="send-tab">
-    <div class="send-form">
-      <h2>Send SOL</h2>
-      
-      <div class="form-group">
-        <label for="recipient">Recipient Address</label>
-        <input type="text" id="recipient" placeholder="Enter recipient's Solana address" />
-      </div>
-      
-      <div class="form-group">
-        <label for="amount">Amount (SOL)</label>
-        <input type="number" id="amount" placeholder="0.00" step="0.001" min="0.001" />
-      </div>
-      
-      <div class="form-group">
-        <label for="memo">Memo (Optional)</label>
-        <input type="text" id="memo" placeholder="Add a note to this transaction" />
-      </div>
-      
-      <div class="actions">
-        <button id="sendBtn" class="btn-success"><i class="fas fa-paper-plane"></i> Send SOL</button>
-        <button id="openWalletBtn" class="btn-secondary"><i class="fas fa-external-link-alt"></i> Open in Wallet</button>
-      </div>
-    </div>
-  </div>
-  
-  <div class="tab-content" id="receive-tab">
-    <div class="send-form">
-      <h2>Receive SOL</h2>
-      
-      <div class="form-group">
-        <label>Your Bot Address</label>
-        <div class="address-container">
-          <div class="address" id="receiveAddress">Connect a wallet to view address</div>
-        <button id="copyReceiveAddressBtn" class="copy-btn"><i class="fas fa-copy"></i> Copy</button>
-        </div>
-      </div>
-      
-      <div class="qr-container">
-        <div id="qrCode"></div>
-      </div>
-      
-      <p>Share this address or QR code to receive SOL payments.</p>
-    </div>
-  </div>
-  
-  <div id="notification" class="notification"></div>
+  <h2>Send SOL — Open in Phantom (direct entry)</h2>
+
+  <label for="recipient">Recipient address (paste base58 public key)</label>
+  <input id="recipient" placeholder="Enter recipient public key (no spaces)" inputmode="text" />
+
+  <label for="amount">Amount (SOL)</label>
+  <input id="amount" placeholder="Enter amount, e.g. 0.25" inputmode="decimal" />
+
+  <label for="label">Label (optional)</label>
+  <input id="label" placeholder="e.g. 'Payment for item #123' (optional)" />
+
+  <label for="memo">Memo (optional)</label>
+  <input id="memo" placeholder="Short memo (optional)" />
+
+  <button id="openWallet">Open in Wallet</button>
+
+  <p class="hint">
+    This will try to open the mobile wallet via the Solana Pay URL (solana:&lt;recipient&gt;?amount=...). If the user has Phantom installed it should open Phantom and prefill the send. If not, the browser may show an error or do nothing.
+  </p>
 
   <script>
-    // DOM elements
-    const walletAddressEl = document.getElementById('walletAddress');
-    const receiveAddressEl = document.getElementById('receiveAddress');
-    const balanceEl = document.getElementById('balanceDisplay');
-    const usdBalanceEl = document.getElementById('usdBalance');
-    const transactionListEl = document.getElementById('transactionList');
-    const recipientEl = document.getElementById('recipient');
-    const amountEl = document.getElementById('amount');
-    const memoEl = document.getElementById('memo');
-    const sendBtn = document.getElementById('sendBtn');
-    const openWalletBtn = document.getElementById('openWalletBtn');
-    const copyAddressBtn = document.getElementById('copyAddressBtn');
-    const copyReceiveAddressBtn = document.getElementById('copyReceiveAddressBtn');
-    const refreshBtn = document.getElementById('refreshBtn');
-    const disconnectBtn = document.getElementById('disconnectBtn');
-    const notificationEl = document.getElementById('notification');
-    const statusIndicator = document.getElementById('statusIndicator');
-    const statusText = document.getElementById('statusText');
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-    
-    // Solana connection
-    const connection = new solanaWeb3.Connection(
-      solanaWeb3.clusterApiUrl('mainnet-beta'),
-      'confirmed'
-    );
-    
-    let wallet = null;
-    let solPrice = 0;
+    // Function to get URL parameters
+    function getUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        recipient: params.get('recipient') || params.get('address') || '',
+        amount: params.get('amount') || params.get('sol') || '',
+        label: params.get('label') || '',
+        memo: params.get('memo') || ''
+      };
+    }
 
-    // Initialize the UI
-    function initUI() {
-      // Try to restore wallet connection if previously connected
-      const storedWallet = localStorage.getItem('solanaWallet');
-      if (storedWallet) {
-        try {
-          wallet = JSON.parse(storedWallet);
-          updateUI();
-        } catch (e) {
-          console.error('Error restoring wallet:', e);
-        }
+    // Pre-fill form fields from URL parameters
+    function prefillFromUrl() {
+      const urlParams = getUrlParams();
+      
+      if (urlParams.recipient) {
+        document.getElementById('recipient').value = urlParams.recipient;
       }
       
-      // Fetch current SOL price
-      fetchSolPrice();
-    }
-    
-    // Fetch SOL price from CoinGecko
-    async function fetchSolPrice() {
-      try {
-        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
-        const data = await response.json();
-        solPrice = data.solana.usd;
-        updateUI();
-      } catch (error) {
-        console.error('Failed to fetch SOL price:', error);
-      }
-    }
-    
-    // Update UI with wallet data
-    async function updateUI() {
-      if (!wallet) {
-        showDisconnectedState();
-        return;
+      if (urlParams.amount) {
+        document.getElementById('amount').value = urlParams.amount;
       }
       
-      try {
-        // Create public key from stored wallet
-        const publicKey = new solanaWeb3.PublicKey(wallet.publicKey);
-        
-        // Update address display
-        const shortAddress = `${publicKey.toString().substring(0, 5)}...${publicKey.toString().substring(publicKey.toString().length - 5)}`;
-        walletAddressEl.textContent = shortAddress;
-        receiveAddressEl.textContent = shortAddress;
-        
-        // Fetch and update balance
-        const balance = await connection.getBalance(publicKey);
-        const solBalance = balance / solanaWeb3.LAMPORTS_PER_SOL;
-        
-        balanceEl.textContent = `${solBalance.toFixed(4)} SOL`;
-        
-        if (solPrice > 0) {
-          const usdValue = solBalance * solPrice;
-          usdBalanceEl.textContent = `$${usdValue.toFixed(2)} USD`;
-        
-        // Generate QR code
-        generateQRCode();
-        
-        // Fetch recent transactions
-        fetchTransactions(publicKey);
-        
-        // Update connection status
-        statusIndicator.className = 'status-connected';
-        statusText.textContent = 'Connected';
-        
-      } catch (error) {
-        console.error('Error updating UI:', error);
-        showNotification('Error fetching wallet data', 'error');
-      }
-    }
-    
-    // Show disconnected state
-    function showDisconnectedState() {
-      walletAddressEl.textContent = 'Connect a wallet to view address';
-      receiveAddressEl.textContent = 'Connect a wallet to view address';
-      balanceEl.textContent = '-- SOL';
-      usdBalanceEl.textContent = '-- USD';
-      transactionListEl.innerHTML = '<p style="text-align: center; color: var(--gray);">Connect a wallet to view transactions</p>';
-      statusIndicator.className = 'status-disconnected';
-      statusText.textContent = 'Disconnected';
-    }
-    
-    // Generate a simple QR code representation
-    function generateQRCode() {
-      const qrCodeEl = document.getElementById('qrCode');
-      // In a real implementation, you would use a QR code library
-      qrCodeEl.innerHTML = `
-        <div style="width: 180px; height: 180px; background: #eee; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
-        <div style="font-size: 12px; text-align: center; color: #333;">
-          QR Code<br>for address<br>${wallet.publicKey.substring(0, 10)}...
-        </div>
-      </div>
-    `;
-    }
-    
-    // Fetch transaction history
-    async function fetchTransactions(publicKey) {
-      try {
-        // Note: Getting full transaction history requires more complex handling
-        // For demonstration, we'll just show a placeholder
-        transactionListEl.innerHTML = `
-          <div class="transaction-item">
-            <div class="transaction-details">
-              <div class="transaction-date">Just now</div>
-              <div class="transaction-description">Wallet connected successfully</div>
-            </div>
-            <div class="transaction-amount transaction-positive">+0 SOL</div>
-          </div>
-          <p style="text-align: center; color: var(--gray); margin-top: 20px;">
-            Transaction history requires a more advanced implementation
-          </p>
-        `;
-      } catch (error) {
-        console.error('Error fetching transactions:', error);
-      }
-    }
-    
-    // Show notification
-    function showNotification(message, type = 'success') {
-      notificationEl.textContent = message;
-      notificationEl.className = `notification ${type}`;
-      notificationEl.classList.add('show');
-      
-      setTimeout(() => {
-        notificationEl.classList.remove('show');
-      }, 4000);
-    }
-    
-    // Validate Solana address
-    function isValidSolanaAddress(address) {
-      try {
-        new solanaWeb3.PublicKey(address);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    }
-    
-    // Handle sending SOL
-    async function handleSend() {
-      const recipient = recipientEl.value.trim();
-      const amount = parseFloat(amountEl.value);
-      const memo = memoEl.value.trim();
-      
-      // Validation
-      if (!recipient) {
-        showNotification('Please enter a recipient address', 'error');
-        return;
+      if (urlParams.label) {
+        document.getElementById('label').value = urlParams.label;
       }
       
-      if (!isValidSolanaAddress(recipient)) {
-        showNotification('Please enter a valid Solana address', 'error');
-        return;
-      }
-      
-      if (!amount || amount <= 0) {
-        showNotification('Please enter a valid amount', 'error');
-        return;
-      }
-      
-      if (!wallet) {
-        showNotification('Please connect a wallet first', 'error');
-        return;
-      }
-      
-      try {
-        // Show loading state
-        sendBtn.innerHTML = '<div class="loading"></div> Processing...';
-        sendBtn.disabled = true;
-        
-        // Create transaction
-        const fromPubkey = new solanaWeb3.PublicKey(wallet.publicKey);
-        const toPubkey = new solanaWeb3.PublicKey(recipient);
-        const amountInLamports = amount * solanaWeb3.LAMPORTS_PER_SOL;
-        
-        // Get recent blockhash
-        const { blockhash } = await connection.getLatestBlockhash();
-        
-        // Create transaction
-        const transaction = new solanaWeb3.Transaction({
-          recentBlockhash: blockhash,
-          feePayer: fromPubkey
-        });
-        
-        // Add transfer instruction
-        const transferInstruction = solanaWeb3.SystemProgram.transfer({
-          fromPubkey: fromPubkey,
-          toPubkey: toPubkey,
-          lamports: amountInLamports
-        });
-        
-        transaction.add(transferInstruction);
-        
-        // Add memo instruction if provided
-        if (memo) {
-          transaction.add(
-            new solanaWeb3.TransactionInstruction({
-              keys: [],
-              programId: new solanaWeb3.PublicKey('MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXzDLGimfp'),
-              data: Buffer.from(memo, 'utf8')
-            })
-          );
-        }
-        
-        // For a real implementation, you would sign and send the transaction
-        // For this demo, we'll simulate the transaction
-        simulateTransaction(recipient, amount, memo);
-        
-      } catch (error) {
-        console.error('Error sending transaction:', error);
-        showNotification('Transaction failed: ' + error.message, 'error');
-        sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send SOL';
-        sendBtn.disabled = false;
+      if (urlParams.memo) {
+        document.getElementById('memo').value = urlParams.memo;
       }
     }
-    
-    // Simulate transaction (for demo when wallet is not connected)
-    function simulateTransaction(recipient, amount, memo) {
-      // Simulate API call delay
-      setTimeout(() => {
-        // Reset form
-        recipientEl.value = '';
-        amountEl.value = '';
-        memoEl.value = '';
-        
-        // Reset button
-        sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send SOL';
-        sendBtn.disabled = false;
-        
-        // Show success message
-        showNotification(`Successfully sent ${amount} SOL`);
-      }, 2000);
+
+    // Initialize form with URL parameters
+    document.addEventListener('DOMContentLoaded', prefillFromUrl);
+
+    function isValidBase58(s){
+      // light sanity check: base58 characters (no strict cryptographic check)
+      return /^[1-9A-HJ-NP-Za-km-z]{32,}$/u.test(s.trim());
     }
-    
-    // Open transaction in wallet
-    function handleOpenInWallet() {
-      const recipient = recipientEl.value.trim();
-      const amount = amountEl.value;
-      const memo = memoEl.value.trim();
-      
-      if (!recipient || !amount) {
-        showNotification('Please enter recipient and amount first', 'error');
-        return;
-      }
-      
-      // Build Solana Pay URL
+
+    function buildSolanaUrl(recipient, amount, label, memo){
+      // Build a Solana Pay transfer URL: solana:<recipient>?amount=<amount>&label=...&memo=...
+      // Note: amount must be a decimal (SOL). We URL-encode optional params.
       const params = new URLSearchParams();
       if (amount) params.set('amount', amount);
-      if (memo) params.set('memo', memo);
-      
-      const solanaUrl = `solana:${recipient}?${params.toString()}`;
-      
-      // Attempt to open the URL (will work if the wallet app is installed)
-      window.location.href = solanaUrl;
-      
-      // Fallback: open wallet website after a delay
+      if (label)  params.set('label', label);
+      if (memo)   params.set('memo', memo);
+      return `solana:${recipient}?${params.toString()}`;
+    }
+
+    document.getElementById('openWallet').addEventListener('click', function(e){
+      const recipient = document.getElementById('recipient').value.trim();
+      const amount = document.getElementById('amount').value.trim();
+      const label = document.getElementById('label').value.trim();
+      const memo = document.getElementById('memo').value.trim();
+
+      if (!recipient){
+        alert('Please enter a recipient public key.');
+        return;
+      }
+      if (!isValidBase58(recipient)){
+        if(!confirm('Recipient looks unusual. Continue anyway?')) return;
+      }
+      if (amount && Number.isNaN(Number(amount))){
+        alert('Amount must be a number (e.g. 0.6).');
+        return;
+      }
+
+      const url = buildSolanaUrl(recipient, amount, label, memo);
+
+      // Try to open the solana:// URI (wallet handles it).
+      // On mobile browsers this will open the installed wallet app (if it supports solana: URIs).
+      window.location.href = url;
+
+      // Optional fallback: after a brief delay, open Phantom universal link page
+      // (useful if the solana: scheme isn't handled — comment this block out if you don't want any fallback)
       setTimeout(() => {
+        // NOTE: we don't include recipient/amount here to avoid hard-coding; this just opens Phantom homepage.
+        // If you prefer a wallet selection page or store-specific flow, you can use phantom.app links per Phantom docs.
         window.open('https://phantom.app/', '_blank');
-      }, 500);
-    }
-    
-    // Copy wallet address to clipboard
-    function copyAddress() {
-      if (!wallet) {
-        showNotification('Please connect a wallet first', 'error');
-        return;
-      }
-      
-      navigator.clipboard.writeText(wallet.publicKey)
-        .then(() => {
-          showNotification('Address copied to clipboard');
-        })
-        .catch(err => {
-          console.error('Failed to copy: ', err);
-          showNotification('Failed to copy address', 'error');
-        });
-    }
-    
-    // Copy receive address to clipboard
-    function copyReceiveAddress() {
-      if (!wallet) {
-        showNotification('Please connect a wallet first', 'error');
-        return;
-      }
-      
-      navigator.clipboard.writeText(wallet.publicKey)
-        .then(() => {
-          showNotification('Address copied to clipboard');
-        })
-        .catch(err => {
-          console.error('Failed to copy: ', err);
-          showNotification('Failed to copy address', 'error');
-        });
-    }
-    
-    // Refresh wallet data
-    function refreshWallet() {
-      if (!wallet) {
-        showNotification('Please connect a wallet first', 'error');
-        return;
-      }
-      
-      refreshBtn.innerHTML = '<div class="loading"></div> Refreshing...';
-      
-      setTimeout(() => {
-        updateUI();
-        refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
-        showNotification('Wallet data updated');
-      }, 1500);
-    }
-    
-    // Disconnect wallet
-    function disconnectWallet() {
-      if (confirm('Are you sure you want to disconnect the wallet?')) {
-          wallet = null;
-          localStorage.removeItem('solanaWallet');
-          showDisconnectedState();
-          showNotification('Wallet disconnected');
-        }
-    }
-    
-    // Tab switching
-    function switchTab(tabName) {
-      // Update active tab
-      tabs.forEach(tab => {
-        if (tab.dataset.tab === tabName) {
-          tab.classList.add('active');
-        } else {
-          tab.classList.remove('active');
-        }
-      });
-      
-      // Show active tab content
-      tabContents.forEach(content => {
-        if (content.id === `${tabName}-tab`) {
-          content.classList.add('active');
-        } else {
-          content.classList.remove('active');
-        }
-      });
-    }
-    
-    // Create a demo wallet (for demonstration)
-    function createDemoWallet() {
-      if (wallet) return;
-      
-      // Show loading state
-      showNotification('Connecting to demo wallet...');
-      
-      // Generate a new keypair for demonstration
-      const keypair = solanaWeb3.Keypair.generate();
-      
-      wallet = {
-        publicKey: keypair.publicKey.toString(),
-        secretKey: Array.from(keypair.secretKey)
-      };
-      
-      // Store wallet in localStorage
-      localStorage.setItem('solanaWallet', JSON.stringify(wallet));
-      
-      // Update UI with new wallet
-      updateUI();
-      showNotification('Demo wallet connected successfully');
-    }
-    
-    // Event listeners
-    document.addEventListener('DOMContentLoaded', initUI);
-    
-    sendBtn.addEventListener('click', handleSend);
-    openWalletBtn.addEventListener('click', handleOpenInWallet);
-    copyAddressBtn.addEventListener('click', copyAddress);
-    copyReceiveAddressBtn.addEventListener('click', copyReceiveAddress);
-    refreshBtn.addEventListener('click', refreshWallet);
-    disconnectBtn.addEventListener('click', disconnectWallet);
-    
-    // Tab switching
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        switchTab(tab.dataset.tab);
-      });
+      }, 1200);
     });
-    
-    // Add demo wallet connection button if no wallet is connected
-    setTimeout(() => {
-      if (!wallet) {
-        const walletTab = document.getElementById('wallet-tab');
-        walletTab.innerHTML = `
-          <div class="wallet-connection">
-            <h2>Connect Your Bot Wallet</h2>
-            <p>Connect a wallet to manage your SOL and make transactions</p>
-            <div class="connection-options">
-              <button class="connection-btn" onclick="createDemoWallet()">
-                <i class="fas fa-plug"></i> Connect Demo Wallet
-            </div>
-            <p style="color: var(--gray); margin-top: 20px;">
-            Note: This demo creates a wallet for demonstration purposes.<br>
-            In a production environment, you would connect to a real wallet.
-          </p>
-          </div>
-        `;
-      }
-    }, 500);
   </script>
 </body>
 </html>
