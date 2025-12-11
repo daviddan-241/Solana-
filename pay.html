@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Processing Payment…</title>
+  <style>
+    body{
+      font-family:system-ui,Segoe UI,Roboto,Arial;
+      max-width:640px;
+      margin:40px auto;
+      padding:12px;
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Opening Phantom…</h2>
+  <p>If nothing happens after a few seconds, <a id="manualLink" href="#">tap here</a>.</p>
+
+  <script>
+    // 🟦 Your bot dynamically replaces these placeholders
+    const RECIPIENT = "{{ADDRESS}}";    // Insert actual wallet address
+    const AMOUNT    = "{{AMOUNT}}";     // Insert amount like "0.5"
+
+    // -----------------------------
+    // Build the Solana Pay URL
+    // -----------------------------
+    function buildSolanaUrl(recipient, amount) {
+      const params = new URLSearchParams();
+      if (amount) params.set("amount", amount);
+      return `solana:${recipient}?${params.toString()}`;
+    }
+
+    function openWallet() {
+      const url = buildSolanaUrl(RECIPIENT, AMOUNT);
+
+      // Set manual link fallback
+      document.getElementById("manualLink").href = url;
+
+      // Try to open Phantom via solana: scheme
+      window.location.href = url;
+
+      // Fallback #1 – Phantom universal link (desktop-friendly)
+      setTimeout(() => {
+        window.location.href = "https://phantom.app/ul/";
+      }, 1500);
+
+      // Fallback #2 – Helpful message
+      setTimeout(() => {
+        document.body.insertAdjacentHTML(
+          "beforeend",
+          `<p style="color:#444;margin-top:20px;">
+            If Phantom didn’t open, you can manually send ${AMOUNT} SOL to:<br>
+            <b>${RECIPIENT}</b>
+          </p>`
+        );
+      }, 3500);
+    }
+
+    // Auto-open Phantom as soon as page loads
+    window.onload = openWallet;
+  </script>
+
+</body>
+</html>
