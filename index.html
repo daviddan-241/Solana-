@@ -1,86 +1,53 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Send SOL (open in Phantom)</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Solana Payment</title>
   <style>
-    body{font-family:system-ui,Segoe UI,Roboto,Arial;max-width:640px;margin:40px auto;padding:12px}
-    label{display:block;margin:12px 0 6px}
-    input{width:100%;padding:10px;font-size:16px}
-    button{margin-top:14px;padding:12px;width:100%;font-size:16px}
-    .hint{font-size:13px;color:#555;margin-top:8px}
+    body{font-family:system-ui;max-width:600px;margin:40px auto;padding:16px;text-align:center}
   </style>
 </head>
 <body>
-  <h2>Send SOL — Open in Phantom (direct entry)</h2>
 
-  <label for="recipient">Recipient address (paste base58 public key)</label>
-  <input id="recipient" placeholder="Enter recipient public key (no spaces)" inputmode="text" />
-
-  <label for="amount">Amount (SOL)</label>
-  <input id="amount" placeholder="Enter amount, e.g. 0.25" inputmode="decimal" />
-
-  <label for="label">Label (optional)</label>
-  <input id="label" placeholder="e.g. 'Payment for item #123' (optional)" />
-
-  <label for="memo">Memo (optional)</label>
-  <input id="memo" placeholder="Short memo (optional)" />
-
-  <button id="openWallet">Open in Wallet</button>
-
-  <p class="hint">
-    This will try to open the mobile wallet via the Solana Pay URL (solana:&lt;recipient&gt;?amount=...). If the user has Phantom installed it should open Phantom and prefill the send. If not, the browser may show an error or do nothing.
-  </p>
+  <h2>Opening Phantom…</h2>
+  <p>If Phantom does not open automatically, <a id="manualLink" href="#">click here</a>.</p>
 
   <script>
-    function isValidBase58(s){
-      // light sanity check: base58 characters (no strict cryptographic check)
-      return /^[1-9A-HJ-NP-Za-km-z]{32,}$/u.test(s.trim());
-    }
+    // 🟦 Your bot replaces these placeholders dynamically
+    const RECIPIENT = "{{ADDRESS}}";       // e.g. 6Abc123...
+    const AMOUNT    = "{{AMOUNT}}";        // e.g. "0.5" or leave empty
 
-    function buildSolanaUrl(recipient, amount, label, memo){
-      // Build a Solana Pay transfer URL: solana:<recipient>?amount=<amount>&label=...&memo=...
-      // Note: amount must be a decimal (SOL). We URL-encode optional params.
+    function openPhantom() {
       const params = new URLSearchParams();
-      if (amount) params.set('amount', amount);
-      if (label)  params.set('label', label);
-      if (memo)   params.set('memo', memo);
-      return `solana:${recipient}?${params.toString()}`;
+      if (AMOUNT) params.set("amount", AMOUNT);
+
+      // Main Solana Pay URI
+      const solanaUrl = `solana:${RECIPIENT}?${params.toString()}`;
+
+      // Set manual clickable link (backup)
+      document.getElementById("manualLink").href = solanaUrl;
+
+      // Try to open wallet immediately
+      window.location.href = solanaUrl;
+
+      // Fallback #1: Phantom universal link (works on Windows & Desktop)
+      setTimeout(() => {
+        window.location.href = "https://phantom.app/ul/";
+      }, 1500);
+
+      // Fallback #2: message after a few seconds (desktop can't open URI schemes)
+      setTimeout(() => {
+        document.body.insertAdjacentHTML("beforeend",
+          "<p style='margin-top:30px;color:#444;'>If Phantom did not open, open it manually and paste this address:<br><b>" 
+          + RECIPIENT + "</b></p>"
+        );
+      }, 3500);
     }
 
-    document.getElementById('openWallet').addEventListener('click', function(e){
-      const recipient = document.getElementById('recipient').value.trim();
-      const amount = document.getElementById('amount').value.trim();
-      const label = document.getElementById('label').value.trim();
-      const memo = document.getElementById('memo').value.trim();
-
-      if (!recipient){
-        alert('Please enter a recipient public key.');
-        return;
-      }
-      if (!isValidBase58(recipient)){
-        if(!confirm('Recipient looks unusual. Continue anyway?')) return;
-      }
-      if (amount && Number.isNaN(Number(amount))){
-        alert('Amount must be a number (e.g. 0.6).');
-        return;
-      }
-
-      const url = buildSolanaUrl(recipient, amount, label, memo);
-
-      // Try to open the solana:// URI (wallet handles it).
-      // On mobile browsers this will open the installed wallet app (if it supports solana: URIs).
-      window.location.href = url;
-
-      // Optional fallback: after a brief delay, open Phantom universal link page
-      // (useful if the solana: scheme isn't handled — comment this block out if you don't want any fallback)
-      setTimeout(() => {
-        // NOTE: we don't include recipient/amount here to avoid hard-coding; this just opens Phantom homepage.
-        // If you prefer a wallet selection page or store-specific flow, you can use phantom.app links per Phantom docs.
-        window.open('https://phantom.app/', '_blank');
-      }, 1200);
-    });
+    // Auto-run the wallet open attempt
+    window.onload = openPhantom;
   </script>
+
 </body>
 </html>
